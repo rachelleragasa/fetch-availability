@@ -1,0 +1,26 @@
+{
+  "name": "desana-task",
+  "version": "1.0.0",
+  "description": "A task for Desana to calculate when a space is available depending on specific criteria.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register 'src/**/*.spec.ts'",
+    "test:watch": "mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.14.0",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.13.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "mocha": "^8.2.0",
+    "prettier": "^2.1.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {}
+}
