@@ -30,6 +30,39 @@ describe("src/index", () => {
       });
     });
 
+    it("fetches availability for the next 7 days before the space has opened", () => {
+      const availability = fetchAvailability(
+        space,
+        7,
+        new Date(Date.UTC(2020, 8, 7, 10, 30))
+      );
+
+      deepStrictEqual(availability, {
+        "2020-09-07": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-08": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-09": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-10": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-11": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-12": {},
+        "2020-09-13": {},
+      });
+    });
+
     it("fetches availability for a space after the space has opened", () => {
       const availability = fetchAvailability(
         space,
@@ -48,6 +81,39 @@ describe("src/index", () => {
             minute: 0,
           },
         },
+      });
+    });
+
+    it("fetches availability for the next 7 days after the space has opened", () => {
+      const availability = fetchAvailability(
+        space,
+        7,
+        new Date(Date.UTC(2020, 8, 7, 15, 25))
+      );
+
+      deepStrictEqual(availability, {
+        "2020-09-07": {
+          open: { hour: 11, minute: 30 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-08": {
+          open: { hour: 11, minute: 30 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-09": {
+          open: { hour: 11, minute: 30 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-10": {
+          open: { hour: 11, minute: 30 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-11": {
+          open: { hour: 11, minute: 30 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-12": {},
+        "2020-09-13": {},
       });
     });
 
@@ -93,6 +159,39 @@ describe("src/index", () => {
       });
     });
 
+    it("fetches availability for the next 7 days before the space has opened", () => {
+      const availability = fetchAvailability(
+        space,
+        7,
+        new Date(Date.UTC(2020, 8, 7, 10, 30))
+      );
+
+      deepStrictEqual(availability, {
+        "2020-09-07": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-08": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-09": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-10": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-11": {
+          open: { hour: 9, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-12": {},
+        "2020-09-13": {},
+      });
+    });
+
     it("fetches availability for a space after the space has opened", () => {
       const availability = fetchAvailability(
         space,
@@ -111,6 +210,39 @@ describe("src/index", () => {
             minute: 0,
           },
         },
+      });
+    });
+
+    it("fetches availability for the next 7 days after the space has opened", () => {
+      const availability = fetchAvailability(
+        space,
+        7,
+        new Date(Date.UTC(2020, 8, 7, 15, 25))
+      );
+
+      deepStrictEqual(availability, {
+        "2020-09-07": {
+          open: { hour: 12, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-08": {
+          open: { hour: 12, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-09": {
+          open: { hour: 12, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-10": {
+          open: { hour: 12, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-11": {
+          open: { hour: 12, minute: 0 },
+          close: { hour: 17, minute: 0 },
+        },
+        "2020-09-12": {},
+        "2020-09-13": {},
       });
     });
 

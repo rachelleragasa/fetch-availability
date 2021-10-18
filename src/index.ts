@@ -12,13 +12,17 @@ const convertToSeconds = (date: string) => {
 };
 
 const getFutureDates = (date: Date, numberOfDays: number): Date[] => {
-  const dates: Date[] = [];
+  const futureDates: Date[] = [];
 
   for (let i = 0; i < numberOfDays; i++) {
-    dates.push(new Date(date.setDate(date.getDate() + i)));
+    if (i === 0) {
+      futureDates.push(new Date(date.setDate(date.getDate())));
+    } else {
+      futureDates.push(new Date(date.setDate(date.getDate() + 1)));
+    }
   }
 
-  return dates;
+  return futureDates;
 };
 
 const getSpaceStatus = (
