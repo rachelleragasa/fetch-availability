@@ -33,15 +33,15 @@ const getSpaceStatus = (
 
   let check;
 
-  if (spaceCloseTime.isBefore(spaceOpenTime)) {
-    check =
-      currentTime.isAfter(spaceOpenTime) ||
-      currentTime.isBefore(spaceCloseTime);
-  } else {
-    check = currentTime.isBetween(spaceOpenTime, spaceCloseTime);
+  if (currentTime.isBefore(spaceOpenTime)) {
+    check = "is-opening";
+  } else if (currentTime.isBetween(spaceOpenTime, spaceCloseTime)) {
+    check = "is-open";
+  } else if (currentTime.isAfter(spaceCloseTime)) {
+    check = "is-closed";
   }
 
-  return check ? "open" : "closed";
+  return check;
 };
 
 const getAvailableTimes = (
@@ -104,7 +104,7 @@ export const fetchAvailability = (
           .set("minute", close?.minute || 0)
           .format("YYYY-MM-DD HH:mm");
 
-        if (getSpaceStatus(date, openTime, closeTime, timeZone) === "open") {
+        if (getSpaceStatus(date, openTime, closeTime, timeZone) === "is-open") {
           // fetches availability for a space after the space has opened
           const availableTimes = getAvailableTimes(
             openTime,
@@ -148,13 +148,14 @@ export const fetchAvailability = (
               minute: parseInt(closeTime.slice(14, 16)),
             },
           };
-        } else {
-          /**
-           * TODO:
-           *  1. Return open/close hours if current time is before opening hours
-           *  2. Return {} if current time is after closing hours
-           */
+        } else if (
+          getSpaceStatus(date, openTime, closeTime, timeZone) === "is-opening"
+        ) {
           availability[formatDate(date)] = openingTimes[dayOfTheWeek];
+        } else if (
+          getSpaceStatus(date, openTime, closeTime, timeZone) === "is-closed"
+        ) {
+          availability[formatDate(date)] = {};
         }
       }
     });
