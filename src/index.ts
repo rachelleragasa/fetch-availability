@@ -4,20 +4,11 @@ import { OpeningTimes, Space, AvailabilityCalendar } from "./types";
 const formatDate = (date: Date): string =>
   moment.utc(date).format("YYYY-MM-DD");
 
-const convertToSeconds = (str) => {
-  const time = str.slice(11, 19);
-  return time.split(":").reduce((acc, time) => 60 * acc + +time);
-};
+const convertToSeconds = (date: string) => {
+  const [hours, minutes, seconds] = date.slice(11, 19).split(":");
+  const totalMilliseconds = +hours * 60 * 60 + +minutes * 60 + +seconds;
 
-const handleTime = (date: string, timeZone?: string) => {
-  let time;
-  const utcDate = moment.utc(date);
-  if (timeZone) {
-    time = moment.tz(utcDate, timeZone).format("HH:mm:ss");
-  } else {
-    time = moment(utcDate).format("HH:mm:ss");
-  }
-  return time;
+  return totalMilliseconds;
 };
 
 const getFutureDates = (date: Date, numberOfDays: number): Date[] => {
@@ -53,7 +44,11 @@ const getSpaceStatus = (
   return check ? "open" : "closed";
 };
 
-const getAvailableTimes = (openTime: string, closeTime: string) => {
+const getAvailableTimes = (
+  openTime: string,
+  closeTime: string,
+  minimumNotice: number
+) => {
   const start = moment(openTime);
   const end = moment(closeTime);
 
@@ -67,6 +62,10 @@ const getAvailableTimes = (openTime: string, closeTime: string) => {
   while (current <= end) {
     result.push(current.format("YYYY-MM-DD HH:mm:ss"));
     current.add(15, "minutes");
+
+    if (minimumNotice) {
+      current.add(minimumNotice, "minutes");
+    }
   }
 
   return result;
@@ -85,10 +84,9 @@ export const fetchAvailability = (
 ): Record<string, OpeningTimes> => {
   const availability: AvailabilityCalendar = {};
 
-  const { openingTimes, timeZone } = space;
+  const { openingTimes, timeZone, minimumNotice } = space;
 
   const dates = getFutureDates(now, numberOfDays);
-  // const currentTime = moment.utc(now).format("YYYYY-MM-DD HH:mm:ss");
 
   dates.map((date) => {
     Object.keys(openingTimes).forEach((day) => {
@@ -108,7 +106,11 @@ export const fetchAvailability = (
 
         if (getSpaceStatus(date, openTime, closeTime, timeZone) === "open") {
           // fetches availability for a space after the space has opened
-          const availableTimes = getAvailableTimes(openTime, closeTime);
+          const availableTimes = getAvailableTimes(
+            openTime,
+            closeTime,
+            minimumNotice
+          );
 
           // Convert array of available times to seconds in order to compare
           const availableTimesInSeconds = availableTimes.map((time) =>
@@ -116,36 +118,30 @@ export const fetchAvailability = (
           );
 
           // Find next available time slot based on booking time
-          const bookingDate = moment.utc(date).format("YYYY-MM-DD HH:mm:ss");
+          const bookingDate = moment
+            .utc(date)
+            .tz(timeZone)
+            .format("YYYY-MM-DD HH:mm:ss");
           const bookingTimeInSeconds = convertToSeconds(bookingDate);
 
-          const closest = availableTimesInSeconds.reduce((prev, curr) =>
-            Math.abs(curr - bookingTimeInSeconds) <
-            Math.abs(prev - bookingTimeInSeconds)
-              ? curr
-              : prev
+          const nextAvailableTime = availableTimesInSeconds.find(
+            (time) => bookingTimeInSeconds < time
           );
 
-          const hours = closest / 3600;
-          const minutes = (closest % 3600) / 60;
-          const seconds = closest % 60;
+          const hours = (nextAvailableTime as number) / 3600;
+          const minutes = ((nextAvailableTime as number) % 3600) / 60;
+          const seconds = (nextAvailableTime as number) % 60;
 
           const availableBooking = moment(bookingDate)
-            .set("hour", hours || 0)
-            .set("minute", minutes || 0)
-            .set("second", seconds || 0)
+            .hour(hours)
+            .minute(minutes)
+            .second(seconds)
             .format("YYYY-MM-DD HH:mm:ss");
-
-          const availableBookingTimeZone = handleTime(
-            availableBooking,
-            timeZone
-          );
-          // const currentClosingTimeZone = handleTime(closeTime, timeZone);
 
           availability[formatDate(date)] = {
             open: {
-              hour: parseInt(availableBookingTimeZone.slice(0, 2)),
-              minute: parseInt(availableBookingTimeZone.slice(3, 5)),
+              hour: parseInt(availableBooking.slice(11, 13)),
+              minute: parseInt(availableBooking.slice(14, 16)),
             },
             close: {
               hour: parseInt(closeTime.slice(11, 13)),
