@@ -4,11 +4,11 @@ import { OpeningTimes, Space, AvailabilityCalendar } from "./types";
 const formatDate = (date: Date): string =>
   moment.utc(date).format("YYYY-MM-DD");
 
-const convertToSeconds = (date: string) => {
+const convertToSeconds = (date: string): number => {
   const [hours, minutes, seconds] = date.slice(11, 19).split(":");
-  const totalMilliseconds = +hours * 60 * 60 + +minutes * 60 + +seconds;
+  const totalSeconds = +hours * 60 * 60 + +minutes * 60 + +seconds;
 
-  return totalMilliseconds;
+  return totalSeconds;
 };
 
 const getFutureDates = (date: Date, numberOfDays: number): Date[] => {
@@ -126,16 +126,17 @@ export const fetchAvailability = (
             .utc(date)
             .tz(timeZone)
             .format("YYYY-MM-DD HH:mm:ss");
-          const bookingTimeInSeconds = convertToSeconds(bookingDate);
+          const bookingDateInSeconds = convertToSeconds(bookingDate);
 
           const nextAvailableTime = availableTimesInSeconds.find(
-            (time) => bookingTimeInSeconds < time
+            (time) => bookingDateInSeconds < time
           );
 
           const hours = (nextAvailableTime as number) / 3600;
           const minutes = ((nextAvailableTime as number) % 3600) / 60;
           const seconds = (nextAvailableTime as number) % 60;
 
+          // Convert back to date string
           const availableBooking = moment(bookingDate)
             .hour(hours)
             .minute(minutes)
