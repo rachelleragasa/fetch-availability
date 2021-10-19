@@ -7,6 +7,6 @@ When a worker comes to book a coworking space, the apps fetch the available date
 - Typescript
 - Mocha
 
-## Libraries
+## Libraries
 
 - MomentJS
